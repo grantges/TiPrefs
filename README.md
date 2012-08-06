@@ -7,7 +7,7 @@ Example:-
 
 Add the module to your project
 
-	var prefs = require("TiPrefs/tiprefs");
+	var prefs = require("tiprefs");
 	
 Initialise new preferences window
 	
