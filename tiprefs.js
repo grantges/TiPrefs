@@ -1,11 +1,11 @@
 // stores each row in the settings view
-var rowData;
+var rows;
 
 // the name of the settings
 var name;
 
-// the shared navBar for opening subviews
-var navBar;
+// the shared nav for opening subviews
+var nav;
 
 // helper function to build a new row
 // takes .label and .value controls e.g. Ti.UI.Label and Ti.UI.TextField
@@ -23,8 +23,8 @@ function addRow(controls) {
 	controls.value.right = 10;
 	controls.value.top = 6;
 
-	// if icon specfied, let's place that, adjust
-	// the label to fit.
+	// if icon specfied, let's place that, 
+	// adjust the label to fit.
 	if (controls.icon) {
 		image = Ti.UI.createImageView({
 			image : controls.icon,
@@ -38,33 +38,42 @@ function addRow(controls) {
 		row.add(image);
 	}
 
-	// add the label and value control to the row
+	// add the label and value 
+	// control to the row
 	row.add(controls.label);
 	row.add(controls.value);
 
 	// push the row to the array
-	rowData.push(row);
+	rows.push(row);
 
 	// return the row object
 	return row;
 }
 
-// initialise a new settings panel
-exports.init = function(title) {
-	rowData = [];
-	name = title || "settings";
-}
-// add a textinput
-exports.addTextInput = function(opts) {
-
+// creates a default label for a row
+function createLabel(caption){
 	var label = Ti.UI.createLabel({
 		font : {
 			fontSize : 17,
 			fontWeight : 'bold'
 		},
-		text : opts.caption
+		text : caption
 	});
+	
+	return label;
+}
 
+
+// initialise a new settings panel
+exports.init = function(title) {
+	rows = [];
+	name = title || "Settings";
+}
+// add a textinput
+exports.addTextInput = function(opts) {
+
+	var label = createLabel(opts.caption);
+	
 	var value = Ti.UI.createLabel({
 		font : {
 			fontSize : 17,
@@ -86,7 +95,7 @@ exports.addTextInput = function(opts) {
 
 		var editWin = Ti.UI.createWindow({
 			title : 'edit',
-			navBarHidden : false
+			Hidden : false
 		});
 
 		var table = Ti.UI.createTableView({
@@ -128,17 +137,17 @@ exports.addTextInput = function(opts) {
 
 		cancel.addEventListener('click', function() {
 
-			navBar.close(editWin);
+			nav.close(editWin);
 		});
 
 		save.addEventListener('click', function() {
 			// save the value
 			value.text = text.value;
 			Ti.App.Properties.setString(name + "." + (opts.id || opts.caption), text.value);
-			navBar.close(editWin);
+			nav.close(editWin);
 		});
 
-		navBar.open(editWin);
+		nav.open(editWin);
 	});
 }
 // add a switch row
@@ -182,7 +191,7 @@ exports.open = function(tabGroup) {
 	});
 
 	// push the rows
-	table.data = rowData;
+	table.data = rows;
 
 	// add it to the specified window
 	prefsWin.add(table);
@@ -190,8 +199,8 @@ exports.open = function(tabGroup) {
 	// if we have a tabGroup specified
 	if (!tabGroup) {
 
-		// we need a navbar
-		navBar = Ti.UI.iPhone.createNavigationGroup({
+		// we need a nav
+		nav = Ti.UI.iPhone.createNavigationGroup({
 			window : prefsWin
 		});
 
@@ -199,16 +208,14 @@ exports.open = function(tabGroup) {
 		var rootWin = Ti.UI.createWindow();
 
 		// add the navbar
-		rootWin.add(navBar);
+		rootWin.add(nav);
 
 		// open it
 		rootWin.open();
 
 	} else {
 
-		navBar = tabGroup.activeTab;
-		navBar.open(prefsWin);
-
+		nav = tabGroup.activeTab;
+		nav.open(prefsWin);
 	}
-
 }
