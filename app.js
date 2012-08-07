@@ -23,23 +23,27 @@ var prefs = require("TiPrefs/tiprefs");
 prefs.init("foo");
 
 prefs.addSwitch({
+	id : "SAVE_ON_QUIT",
 	caption : "Save on quit"
 });
 
 prefs.addSwitch({
+	id : "HIDE_ALERTS",
 	caption : "Hide Alerts"
 });
 
 prefs.addTextInput({
+	id : "USERNAME",
 	caption : "username",
 	value : "myuser"
 });
 
 prefs.addTextInput({
+	id : "API_KEY",
 	caption : "API Key",
 	value : "1234"
 
 });
 
-prefs.open(win1);
+prefs.open();
 

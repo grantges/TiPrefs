@@ -1,9 +1,11 @@
-var rowData;
 // stores each row in the settings view
-var name;
+var rowData;
+
 // the name of the settings
-var navBar;
+var name;
+
 // the shared navBar for opening subviews
+var navBar;
 
 // helper function to build a new row
 // takes .label and .value controls e.g. Ti.UI.Label and Ti.UI.TextField
@@ -69,7 +71,7 @@ exports.addTextInput = function(opts) {
 			fontWeight : 'normal'
 
 		},
-		text : Ti.App.Properties.getString(name + "." + label.text) || opts.value,
+		text : Ti.App.Properties.getString(name + "." + opts.id || opts.name) || opts.value,
 		color : '#777'
 	});
 
@@ -132,7 +134,7 @@ exports.addTextInput = function(opts) {
 		save.addEventListener('click', function() {
 			// save the value
 			value.text = text.value;
-			Ti.App.Properties.setString(name + "." + label.text, text.value);
+			Ti.App.Properties.setString(name + "." + (opts.id || opts.caption), text.value);
 			navBar.close(editWin);
 		});
 
@@ -150,13 +152,11 @@ exports.addSwitch = function(opts) {
 	});
 
 	var toggle = Ti.UI.createSwitch({
-		value : false
+		value : Ti.App.Properties.getBool(name + "." + opts.caption, false)
 	});
 
-	toggle.value = Ti.App.Properties.getBool(name + "." + opts.caption, false);
-
 	toggle.addEventListener("change", function(e) {
-		Ti.App.Properties.setBool(name + "." + opts.caption, e.value);
+		Ti.App.Properties.setBool(name + "." + (opts.id || opts.caption), e.value);
 
 		if (opts.onChange) {
 			opts.onChange(toggle.value);
@@ -169,23 +169,12 @@ exports.addSwitch = function(opts) {
 	});
 }
 // open the prefs window
-exports.open = function() {
+exports.open = function(tabGroup) {
 
 	// create a window
 	var prefsWin = Ti.UI.createWindow({
 		title : name
 	});
-
-	// we need a navbar
-	navBar = Ti.UI.iPhone.createNavigationGroup({
-		window : prefsWin
-	});
-
-	// create a host window
-	var win = Ti.UI.createWindow();
-
-	// add the navbar
-	win.add(navBar);
 
 	// create a table
 	var table = Titanium.UI.createTableView({
@@ -198,7 +187,28 @@ exports.open = function() {
 	// add it to the specified window
 	prefsWin.add(table);
 
-	// open it
-	win.open();
+	// if we have a tabGroup specified
+	if (!tabGroup) {
+
+		// we need a navbar
+		navBar = Ti.UI.iPhone.createNavigationGroup({
+			window : prefsWin
+		});
+
+		// create a host window
+		var rootWin = Ti.UI.createWindow();
+
+		// add the navbar
+		rootWin.add(navBar);
+
+		// open it
+		rootWin.open();
+
+	} else {
+
+		navBar = tabGroup.activeTab;
+		navBar.open(prefsWin);
+
+	}
 
 }
