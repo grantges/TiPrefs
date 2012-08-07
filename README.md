@@ -1,4 +1,4 @@
-iPrefs
+TiPrefs
 ======
 
 A module to help build preferences/settings pages quickly allowing you to add Switches, TextInputs etc.
