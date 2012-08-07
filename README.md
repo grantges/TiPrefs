@@ -1,5 +1,5 @@
-TiPrefs
-======
+TiPrefs (WORK IN PROGRESS)
+==========================
 
 A module to help build preferences/settings pages quickly allowing you to add Switches, TextInputs etc.
 
@@ -65,4 +65,5 @@ or for the choice list above
 
 	Ti.App.Properties.getBool("Settings_day_of_week_1");
 
+This is WORK IN PROGRESS!
 	
