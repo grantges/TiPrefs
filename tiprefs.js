@@ -23,7 +23,7 @@ function addRow(controls) {
 	controls.value.right = 10;
 	controls.value.top = 6;
 
-	// if icon specfied, let's place that, 
+	// if icon specfied, let's place that,
 	// adjust the label to fit.
 	if (controls.icon) {
 		image = Ti.UI.createImageView({
@@ -38,7 +38,7 @@ function addRow(controls) {
 		row.add(image);
 	}
 
-	// add the label and value 
+	// add the label and value
 	// control to the row
 	row.add(controls.label);
 	row.add(controls.value);
@@ -51,7 +51,7 @@ function addRow(controls) {
 }
 
 // creates a default label for a row
-function createLabel(caption){
+function createLabel(caption) {
 	var label = Ti.UI.createLabel({
 		font : {
 			fontSize : 17,
@@ -59,10 +59,9 @@ function createLabel(caption){
 		},
 		text : caption
 	});
-	
+
 	return label;
 }
-
 
 // initialise a new settings panel
 exports.init = function(title) {
@@ -73,14 +72,14 @@ exports.init = function(title) {
 exports.addTextInput = function(opts) {
 
 	var label = createLabel(opts.caption);
-	
+
 	var value = Ti.UI.createLabel({
 		font : {
 			fontSize : 17,
 			fontWeight : 'normal'
 
 		},
-		text : Ti.App.Properties.getString(name + "." + opts.id || opts.name) || opts.value,
+		text : Ti.App.Properties.getString(name + "_" + opts.id || opts.name) || opts.value,
 		color : '#777'
 	});
 
@@ -143,7 +142,104 @@ exports.addTextInput = function(opts) {
 		save.addEventListener('click', function() {
 			// save the value
 			value.text = text.value;
-			Ti.App.Properties.setString(name + "." + (opts.id || opts.caption), text.value);
+			Ti.App.Properties.setString(name + "_" + (opts.id || opts.caption), text.value);
+			nav.close(editWin);
+		});
+
+		nav.open(editWin);
+	});
+}
+exports.addChoice = function(opts) {
+
+	var label = createLabel(opts.caption);
+
+	var value = Ti.UI.createLabel({
+		font : {
+			fontSize : 17,
+			fontWeight : 'normal'
+
+		},
+		text : Ti.App.Properties.getString(name + "_" + opts.id || opts.name) || opts.value,
+		color : '#777'
+	});
+
+	row = addRow({
+		label : label,
+		value : value
+	});
+
+	row.hasChild = true;
+
+	row.addEventListener("click", function(e) {
+
+		var rows = [];
+
+		var editWin = Ti.UI.createWindow({
+			title : 'select',
+			Hidden : false
+		});
+
+		var table = Ti.UI.createTableView({
+			style : Ti.UI.iPhone.TableViewStyle.GROUPED
+		});
+
+		for ( i = 0; i < opts.choices.length; i++) {
+			var row = Ti.UI.createTableViewRow({
+				height : 40
+			});
+
+			var text = Ti.UI.createLabel({
+				left : 10,
+				right : 10,
+				text : opts.choices[i].title,
+				font : {
+					fontSize : 17,
+					fontWeight : 'bold'
+
+				}
+			});
+
+			row.value = opts.choices[i].value;
+
+			row.hasCheck = Ti.App.Properties.getBool(name + "_" + (opts.id || opts.caption) + "_" + row.value)
+
+			row.add(text);
+
+			rows.push(row);
+
+		}
+
+		table.setData(rows);
+
+		table.addEventListener('click', function(e) {
+			e.row.hasCheck = !e.row.hasCheck;
+		});
+
+		var cancel = Ti.UI.createButton({
+			title : 'Cancel',
+			width : 50,
+			height : 30
+		});
+
+		var save = Ti.UI.createButton({
+			title : 'Save',
+			width : 50,
+			height : 30
+		});
+
+		editWin.setLeftNavButton(cancel);
+		editWin.setRightNavButton(save);
+		editWin.add(table);
+
+		cancel.addEventListener('click', function() {
+
+			nav.close(editWin);
+		});
+
+		save.addEventListener('click', function() {
+			for ( i = 0; i < table.data[0].rows.length; i++) {
+				Ti.App.Properties.setBool(name + "_" + (opts.id || opts.caption) + "_" + table.data[0].rows[i].value, table.data[0].rows[i].hasCheck)
+			}
 			nav.close(editWin);
 		});
 
@@ -152,6 +248,7 @@ exports.addTextInput = function(opts) {
 }
 // add a switch row
 exports.addSwitch = function(opts) {
+
 	var label = Ti.UI.createLabel({
 		font : {
 			fontSize : 17,
@@ -161,11 +258,11 @@ exports.addSwitch = function(opts) {
 	});
 
 	var toggle = Ti.UI.createSwitch({
-		value : Ti.App.Properties.getBool(name + "." + opts.caption, false)
+		value : Ti.App.Properties.getBool(name + "_" + opts.caption, false)
 	});
 
 	toggle.addEventListener("change", function(e) {
-		Ti.App.Properties.setBool(name + "." + (opts.id || opts.caption), e.value);
+		Ti.App.Properties.setBool(name + "_" + (opts.id || opts.caption), e.value);
 
 		if (opts.onChange) {
 			opts.onChange(toggle.value);

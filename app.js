@@ -32,6 +32,33 @@ prefs.addSwitch({
 	caption : "Hide Alerts"
 });
 
+prefs.addChoice({
+	id : "DAY_OF_WEEK",
+	caption : "Day of Week",
+	choices : [{
+		title : 'Every Monday',
+		value : 1
+	}, {
+		title : 'Every Tuesday',
+		value : 2
+	}, {
+		title : 'Every Wednesday',
+		value : 3
+	}, {
+		title : 'Every Thursday',
+		value : 4
+	}, {
+		title : 'Every Friday',
+		value : 5
+	}, {
+		title : 'Every Saturday',
+		value : 6
+	}, {
+		title : 'Every Sunday',
+		value : 7
+	}]
+});
+
 prefs.addTextInput({
 	id : "USERNAME",
 	caption : "username",
